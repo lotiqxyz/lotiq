@@ -1,4 +1,4 @@
-import { BRAND } from "@/config/brand";
+import { BRAND, TOKEN } from "@/config/brand";
 
 /* Home FAQ (also emitted as FAQPage JSON-LD). Plain answers; every limit stated where it applies. */
 export const FAQ = [
@@ -28,7 +28,8 @@ export const FAQ = [
   },
   {
     q: "How does the holder check work?",
-    a: "You sign one sign-in message (no gas, valid up to 4 hours). On every hosted request the server checks that signature, the site, the chain and the expiry, then reads your token balance and the total supply on chain: balance ≥ supply / 1000 is the holder tier. Before the token launches everyone uses the free tier.",
+    a: "You sign one sign-in message (no gas, valid up to 4 hours). On every hosted request the server checks that signature, the site, the chain and the expiry, then reads your token balance and the total supply on chain: balance ≥ supply / 1000 is the holder tier." +
+      (TOKEN.isLive ? "" : " Before the token launches everyone uses the free tier."),
   },
   {
     q: "What alerts are there, and do they cost anything?",

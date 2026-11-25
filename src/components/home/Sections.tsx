@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BRAND, CHAIN } from "@/config/brand";
+import { BRAND, CHAIN, TOKEN } from "@/config/brand";
 import { CONTRACT_NAME } from "@/config/contracts";
 import { CharFade } from "@/components/site/Motion";
 import { StatusBadge } from "@/components/site/PageHead";
@@ -304,7 +304,7 @@ export function Plans() {
   const plans = [
     { name: "Practice", who: "No wallet, in your browser", small: "Prototype", price: "Free", cta: { href: "/studio", label: "Open the studio", cls: "brand" }, badge: "Prototype" as const },
     { name: "On chain", who: `Rule books on ${CHAIN.name}`, small: "You pay network gas only", price: "Gas (ETH)", cta: { href: "/studio?mode=chain", label: "Use on chain", cls: "brand" }, badge: "Prototype" as const },
-    { name: "Holder tier", who: `Hold 0.1 % of ${BRAND.symbol} supply`, small: "Larger hosted quotas; unlocks at launch", price: "0.1 %", cta: { href: "/token", label: "Token features", cls: "" }, badge: "Prototype" as const },
+    { name: "Holder tier", who: `Hold 0.1 % of ${BRAND.symbol} supply`, small: TOKEN.isLive ? "Larger hosted quotas, read on chain" : "Larger hosted quotas; unlocks at launch", price: "0.1 %", cta: { href: "/token", label: "Token features", cls: "" }, badge: "Prototype" as const },
   ];
   const incl = [
     ["Deterministic strategy parser", "Prototype"],
@@ -358,7 +358,7 @@ export function Plans() {
             ))}
           </ul>
           <p className="mt-8 text-[14px] text-muted">
-            The core never needs {BRAND.symbol}; holding 0.1 % of its supply only raises the hosted quotas. Contract address: TBA until launch (launchpad TBA). Nothing here is a promise of value.
+            The core never needs {BRAND.symbol}; holding 0.1 % of its supply only raises the hosted quotas.{TOKEN.isLive ? <> Contract address: <span className="break-all">{BRAND.ca}</span>, the only one.</> : " Contract address: TBA until launch (launchpad TBA)."} Nothing here is a promise of value.
           </p>
         </div>
       </div>

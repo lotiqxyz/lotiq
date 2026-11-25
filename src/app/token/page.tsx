@@ -80,8 +80,8 @@ export default function TokenPage() {
             <li>Every quota is enforced on the server. Practice mode, the studio, the contract and alerts stay free and work without a wallet or the token.</li>
           </ul>
           <p className="mt-4 text-[13px] text-muted">
-            Prototype: runs today and is covered by end-to-end tests on a local Robinhood Chain devnet with a test token. Until {BRAND.symbol} launches, the holder tier shows
-            &ldquo;Unlocks at launch&rdquo; and everyone uses the free tier. No fee discounts, revenue share, rewards or airdrops. Not advice.
+            Prototype: runs today and is covered by end-to-end tests on a local Robinhood Chain devnet with a test token.
+            {TOKEN.isLive ? null : <> Until {BRAND.symbol} launches, the holder tier shows &ldquo;Unlocks at launch&rdquo; and everyone uses the free tier.</>} No fee discounts, revenue share, rewards or airdrops. Not advice.
           </p>
           <Link href="/account" className="btn brand mt-6">
             Check my tier

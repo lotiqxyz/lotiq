@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CHAIN, explorerAddress } from "@/config/brand";
+import { CHAIN, TOKEN, explorerAddress } from "@/config/brand";
 import { CONTRACTS, CONTRACT_NAME, TESTNET, bookLive } from "@/config/contracts";
 import { ETH_USD_FEED } from "@/config/chain";
 import { PageHead, StatusBadge } from "@/components/site/PageHead";
@@ -37,7 +37,7 @@ export default function MethodPage() {
             <Row k="Scenario lab" v={<><StatusBadge status="Prototype" /> Standard and custom test orders on a fresh practice book; each result names the rule and the numbers.</>} />
             <Row k="Versions and approvals" v={<><StatusBadge status="Prototype" /> Practice book in this browser; on chain through {CONTRACT_NAME} once deployed.</>} />
             <Row k="Order journal" v={<><StatusBadge status="Prototype" /> The agent records orders on chain; the contract counts them against the limits. No tokens move.</>} />
-            <Row k="Hosted service + holder tier" v={<><StatusBadge status="Prototype" /> One EIP-4361 sign-in signature (≤ 4 h, checked against a fixed domain list on every request, revoked on sign out). Saved rule books and server scenario runs with quotas enforced on the server; holder = balance ≥ total supply / 1000 of the token, read on chain at each request. Unlocks at launch.</>} />
+            <Row k="Hosted service + holder tier" v={<><StatusBadge status="Prototype" /> One EIP-4361 sign-in signature (≤ 4 h, checked against a fixed domain list on every request, revoked on sign out). Saved rule books and server scenario runs with quotas enforced on the server; holder = balance ≥ total supply / 1000 of the token, read on chain at each request.{TOKEN.isLive ? "" : " Unlocks at launch."}</>} />
             <Row k="Alerts" v={<><StatusBadge status="Prototype" /> Free. A bell inbox derived from the rule book&apos;s events (refused orders via submitOrder, period limit ≥ 80 % / reached, versions waiting, pause, revoke) and browser notifications while a tab is open. No e-mail, no push service.</>} />
             <Row k="Trade execution" v={<><StatusBadge status="Concept" /> Routing real buys through a DEX, with the output forced to the owner, is planned. It is not built because it moves funds and needs its own contract, fork tests and an outside review.</>} />
             <Row k="Agent runtime" v={<><StatusBadge status="Concept" /> A hosted agent that reads the approved version and records orders on schedule is planned. Today the agent is whatever wallet you bind.</>} />
