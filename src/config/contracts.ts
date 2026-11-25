@@ -1,19 +1,18 @@
 import { BRAND, isAddress } from "@/config/brand";
 
 /*
- * Lotiq's own contract on Robinhood Chain (chain 4663). Not deployed yet: the owner deploys it from the localhost-only /deploy page and
- * pastes the address, block and transaction here. Until then the studio's on-chain mode says "contract not deployed yet" and the
- * practice mode (same rules, in the browser) is the whole demo.
+ * Lotiq's own contract on Robinhood Chain (chain 4663), deployed by the owner on 25 Nov 2026 (block 122889425, 2,509,096 gas).
+ * Check it yourself: `npm run verify-deployment -- --book <address> --book-tx <tx>` (values below) prints MATCH.
  *   book  LotiqRuleBook (+ internal library LotiqRuleMath, inlined, nothing to link): rule books with versioned rule sets
  *         (hash + key limits), owner approval of an exact version, agent bound to the approved version, checkOrder reason bits,
  *         an order journal (recordOrder) that counts limits but moves no tokens, pause / halt / revoke. No admin, no fee, no upgrade.
  */
 const DEPLOYED = {
-  book: "TBA",
+  book: "0xe32009d97332710696bae0a2b0420759aff18288",
   /** Block of the deployment transaction (log scans start here). */
-  block: 0,
+  block: 122889425,
   /** Creation transaction. */
-  tx: "",
+  tx: "0xd1d6022fbd207b07f0fd62ae117919ed87da2061d65e3645822de753d302af00",
   /** Local tests only (override): a test ERC-20 standing in for $LOTIQ. Empty in production, where BRAND.ca is used. */
   token: "",
 };
@@ -45,8 +44,8 @@ export function holderToken(): string | null {
 
 /**
  * Robinhood Chain Testnet, proven from this machine on 25 Nov 2026 (eth_chainId 0xb626 = 46630 through the official RPC host, block
- * 157.7 M; Blockscout explorer answering /api/v2/stats). The rule book has no chain-specific code, so the owner may deploy a trial copy
- * there from /deploy. The studio itself works against mainnet, where stock-token identity can be proven (the testnet has many unofficial
+ * 157.7 M; Blockscout explorer answering /api/v2/stats). The rule book has no chain-specific code, so a trial copy could be deployed
+ * there with the same artifacts. The studio itself works against mainnet, where stock-token identity can be proven (the testnet has many unofficial
  * "TSLA" test tokens and no proven list).
  */
 export const TESTNET = {

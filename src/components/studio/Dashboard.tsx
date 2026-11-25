@@ -15,6 +15,7 @@ import { statusWord } from "@/lib/rules/chain";
 import { useJson } from "@/lib/useJson";
 import type { BooksAnswer } from "@/lib/server/books";
 import { useAssets } from "./useAssets";
+import { ContractLive } from "./ContractLive";
 
 /* Dashboard: versions timeline, approvals and scenario results for the practice book (this browser) and, with a wallet, the rule
    books on chain rebuilt from LotiqRuleBook's events. */
@@ -128,6 +129,11 @@ function ChainHistory() {
         </h2>
         {live ? <LiveBadge /> : <StatusBadge status="Prototype" />}
       </div>
+      {live ? (
+        <div className="mt-4">
+          <ContractLive />
+        </div>
+      ) : null}
       {!live ? (
         <p className="mt-3 text-muted">{CONTRACT_NAME} is not deployed yet; on-chain books appear here once it is.</p>
       ) : !wallet.address ? (

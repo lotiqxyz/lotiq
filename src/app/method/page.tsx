@@ -3,6 +3,7 @@ import { CHAIN, explorerAddress } from "@/config/brand";
 import { CONTRACTS, CONTRACT_NAME, TESTNET, bookLive } from "@/config/contracts";
 import { ETH_USD_FEED } from "@/config/chain";
 import { PageHead, StatusBadge } from "@/components/site/PageHead";
+import { ContractLive } from "@/components/studio/ContractLive";
 import { ALL_BITS, BITS, BIT_TEXT } from "@/lib/rules/bits";
 import { pageMeta } from "@/lib/seo";
 
@@ -91,15 +92,18 @@ export default function MethodPage() {
           <h2 id="m4" className="h3">
             The contract: {CONTRACT_NAME}
           </h2>
+          <div className="mt-6">
+            <ContractLive />
+          </div>
           <dl className="kv mt-6">
-            <Row k="Address" v={bookLive() ? <a className="ul font-mono" href={explorerAddress(CONTRACTS.book)} target="_blank" rel="noreferrer">{CONTRACTS.book}</a> : "Not deployed yet. The owner deploys it; the address then appears here and in the footer."} />
+            <Row k="Address" v={bookLive() ? <a className="ul break-all font-mono" href={explorerAddress(CONTRACTS.book)} target="_blank" rel="noreferrer">{CONTRACTS.book}</a> : "Not deployed yet."} />
             <Row k="Stores" v="Rule books (owner, label, active version, pause / revoke, spending window, last order time, order count) and versions (hash + every limit + status + parent)." />
             <Row k="Owner can" v="openBook, propose, approve (exact number + hash), withdraw, pause, unpause, revoke (final), approveOrder, cancelOrderApproval." />
             <Row k="Agent can" v="recordOrder (re-checks every rule at the current block and reverts with Refused(bits) when one fails), submitOrder (same check, but a refusal is logged as OrderRefused instead of reverting, so the owner is alerted) and halt (pause only; it can never unpause or raise a limit)." />
             <Row k="Anyone can" v="checkOrder (reason bits for any order and time), getBook, getVersion, remainingInPeriod, orderKey, booksOf, booksOfAgent." />
             <Row k="Never" v="Holds or moves tokens or ETH, has no admin, no fee, no upgrade path, no owner over other people's books." />
             <Row k="Tests" v={`Unit, fuzz (1,024 runs each), invariant (5 invariants over random owner/agent sequences) and ${CHAIN.name} fork tests (real stock tokens, a real Chainlink feed).`} />
-            <Row k="Review" v="No outside security review yet. It holds no funds, but treat it as new code." />
+            <Row k="Review" v="Source verified on the explorer; deployment checked byte for byte with verify-deployment. No outside security review yet. It holds no funds, but treat it as new code." />
           </dl>
         </section>
 
@@ -109,7 +113,7 @@ export default function MethodPage() {
           </h2>
           <dl className="kv mt-6">
             <Row k={CHAIN.name} v={`Chain id ${CHAIN.id}, gas in ETH, explorer ${CHAIN.explorer}. Reads go through the site's rate-limited relay first, then public RPCs.`} />
-            <Row k={TESTNET.name} v={`Chain id ${TESTNET.id}, proven from this build's machine on 25 Nov 2026 (RPC and explorer answered). The rule book has no chain-specific code, so a trial copy can be deployed there; the studio itself works on mainnet, where stock-token identity can be proven.`} />
+            <Row k={TESTNET.name} v={`Chain id ${TESTNET.id}, proven from this build's machine on 25 Nov 2026 (RPC and explorer answered). The rule book has no chain-specific code, so a trial copy could be deployed there; the live rule book and the studio are on mainnet, where stock-token identity can be proven.`} />
             <Row k="Stock tokens" v={<>See <Link className="ul" href="/assets">Assets</Link>: proxy code hash + beacon slot + minted supply, re-read live; candidates from a vetted 23 Nov 2026 scan.</>} />
             <Row k="Prices" v={<>Chainlink data feeds on {CHAIN.name} (stock feeds pause outside market hours); ETH/USD at <span className="font-mono text-[12px]">{ETH_USD_FEED}</span>.</>} />
           </dl>
