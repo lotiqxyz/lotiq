@@ -22,7 +22,7 @@ const SLUG = "lotiq";
 const TICKER = "LOTIQ";
 const DOMAIN = "lotiq.xyz";
 /** X account of the project (the owner's handle, exactly as written in the order). */
-const X_HANDLE = "lotiq";
+const X_HANDLE = "lotiqxyz";
 
 export const BRAND = {
   name: NAME,
@@ -41,8 +41,8 @@ export const BRAND = {
   description: `${NAME} turns a stock-token strategy into a rule set an agent must follow: one asset, a schedule, a maximum per order and per period, and the orders that need your approval. Ambiguous instructions get questions, not guesses. A scenario lab runs test orders against the rules and shows the exact rule behind every accept or refuse, and every rule change is a new version you approve on Robinhood Chain.`,
   x: `https://x.com/${X_HANDLE}`,
   xHandle: `@${X_HANDLE}`,
-  // Public source repository: none yet, so every source link stays hidden.
-  github: "https://github.com",
+  // Public source repository (open source, MIT).
+  github: "https://github.com/lotiqxyz/lotiq",
   ca: CA,
 } as const;
 
