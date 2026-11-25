@@ -37,8 +37,8 @@ export function pageMeta({
 }
 
 /** Share image cache key: the first 8 hex of the image's sha256 (written by referensi/tools/make-assets.mjs). */
-export const OG_VERSION = "039423e6";
-export const OG_ALT = `${BRAND.name} wordmark and the slogan "${BRAND.slogan}" on a dark ground with a lime rule card.`;
+export const OG_VERSION = "bad2bdf4";
+export const OG_ALT = "The Lotiq mark and wordmark on a dark ground above an orange band, from the project's banner.";
 
 export type Crumb = { name: string; path: string };
 

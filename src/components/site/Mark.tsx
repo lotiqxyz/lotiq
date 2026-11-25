@@ -1,5 +1,5 @@
 /*
- * Lotiq's mark (AI placeholder until the owner's files arrive; referensi/tools/apply-owner-assets.mjs swaps it in):
+ * Lotiq's mark: the owner's logo (25 Nov 2026) once apply-owner-assets.mjs has run (OWNER_MARK below); otherwise the AI placeholder:
  * an L stem and foot with two rule lines, i.e. a rule book. Drawn inline in currentColor so it is crisp at any size.
  * The same geometry is rendered to favicon/app icons/OG by referensi/tools/make-assets.mjs.
  */
@@ -10,13 +10,14 @@ export const MARK_RECTS = [
   { x: 11, y: 9.25, w: 7, h: 4.5 },
 ] as const;
 
-/** Set by referensi/tools/apply-owner-assets.mjs once the owner's logo exists (drawn as a CSS mask in currentColor). */
-export const OWNER_MARK: string | null = null;
+/** Set by referensi/tools/apply-owner-assets.mjs once the owner's logo exists. The owner's mark has two colours (cream + lime), so it is
+ *  drawn as an image, not a single-colour mask; the site is dark everywhere, which both colours read on. */
+export const OWNER_MARK: string | null = "/brand/mark.webp?v=d5af84da";
 
 export function MarkGlyph({ size = 22, accent = false }: { size?: number; accent?: boolean }) {
   if (OWNER_MARK) {
-    const mask = `url(${OWNER_MARK}) center / contain no-repeat`;
-    return <span aria-hidden="true" data-testid="brand-mark" className="block shrink-0 bg-current" style={{ width: size, height: size, WebkitMask: mask, mask }} />;
+     
+    return <img src={OWNER_MARK} alt="" aria-hidden="true" width={size} height={size} data-testid="brand-mark" className="block shrink-0 object-contain" style={{ width: size, height: size }} />;
   }
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" data-testid="brand-mark" className="block shrink-0">

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { CaBox } from "@/components/site/CaCopy";
-import { MarkGlyph } from "@/components/site/Mark";
 import { PageHead, StatusBadge } from "@/components/site/PageHead";
 import { ThresholdLive } from "@/components/holder/ThresholdLive";
 import { BRAND, CHAIN, TOKEN } from "@/config/brand";
@@ -30,9 +29,8 @@ export default function TokenPage() {
       <div className="wrap grid grid-cols-1 gap-6 pb-10 lg:grid-cols-2">
         <section className="panel" data-testid="token-ca">
           <h2 className="h3 flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded bg-[var(--bg)]" data-testid="token-logo">
-              <MarkGlyph size={28} accent />
-            </span>
+            { }
+            <img src="/brand/mark-tile.webp?v=02f2353b" alt={`${BRAND.symbol} logo`} width={44} height={44} className="block shrink-0 rounded" data-testid="token-logo" />
             Contract address
           </h2>
           <p className="mt-4 text-muted">
@@ -63,14 +61,14 @@ export default function TokenPage() {
                 {rows.map((r) => (
                   <tr key={r.what}>
                     <td>{r.what}</td>
-                    <td>{r.free}</td>
-                    <td>{r.holder}</td>
+                    <td className="whitespace-nowrap">{r.free}</td>
+                    <td className="whitespace-nowrap">{r.holder}</td>
                   </tr>
                 ))}
                 <tr>
                   <td>Alerts: bell inbox + browser notifications</td>
-                  <td>free</td>
-                  <td>free</td>
+                  <td className="whitespace-nowrap">yes</td>
+                  <td className="whitespace-nowrap">yes</td>
                 </tr>
               </tbody>
             </table>
