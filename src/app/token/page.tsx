@@ -8,7 +8,7 @@ import { pageMeta } from "@/lib/seo";
 export const metadata = pageMeta({
   path: "/token",
   title: `${BRAND.symbol} token | ${BRAND.name}`,
-  description: `${BRAND.symbol} on ${BRAND.chainName}: contract address${TOKEN.isLive ? "" : " (published at launch)"}, the planned use, and what it is not. The studio never needs it.`,
+  description: `${BRAND.symbol} on ${BRAND.chainName}: contract address${TOKEN.isLive ? "" : " (published at launch)"}, the token features, and what it is not. The studio never needs it.`,
 });
 
 export default function TokenPage() {
@@ -17,7 +17,7 @@ export default function TokenPage() {
       <PageHead title={BRAND.symbol} accent="Not needed to write a rule.">
         <p>
           {BRAND.tokenName} ({BRAND.symbol}) is planned for {CHAIN.name}. The studio, the scenario lab, versions, approvals and the rule book contract all
-          work without it. It is a memecoin with a planned use, not a share of anything and not a promise of value.
+          work without it. It is the community token of Lotiq, not a share of anything and not a promise of value.
         </p>
       </PageHead>
       <div className="wrap grid grid-cols-1 gap-6 pb-10 lg:grid-cols-2">
@@ -40,7 +40,7 @@ export default function TokenPage() {
         </section>
         <section className="panel" id="utility">
           <h2 className="h3 flex flex-wrap items-center gap-3">
-            Planned use <StatusBadge status="Concept" />
+            Token features <StatusBadge status="Concept" />
           </h2>
           <ul className="mt-5 grid list-disc gap-2 pl-5 text-muted">
             <li>Higher limits for saved rule books and scenario runs on a hosted service (planned).</li>

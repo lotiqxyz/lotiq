@@ -103,7 +103,7 @@ The site offers to add it when you connect. Robinhood Chain Testnet (chain ID 46
 
 ## Token
 
-$LOTIQ is the community token of Lotiq on Robinhood Chain. Contract address: announced on https://lotiq.xyz at launch. It has no promised value. Its planned uses (higher limits on a hosted service, refusal alerts, access to a future agent runtime) do not exist yet. The studio never needs it.
+$LOTIQ is the community token of Lotiq on Robinhood Chain. Contract address: announced on https://lotiq.xyz at launch. It has no promised value. Its token features (higher limits on a hosted service, refusal alerts, access to a future agent runtime) are concepts and do not exist yet. The studio never needs it.
 
 ## Deploy your own
 
