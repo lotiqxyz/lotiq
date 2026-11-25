@@ -480,6 +480,45 @@ contract LotiqRuleBookTest is Test {
         assertFalse(ok);
     }
 
+    event OrderRefused(uint256 indexed bookId, uint32 indexed version, address indexed agent, address asset, uint256 amount, uint64 nonce, uint256 bits);
+
+    function test_submitOrderLogsRefusalWithoutReverting() public {
+        uint256 id = openApproved();
+        vm.expectEmit(true, true, true, true);
+        emit OrderRefused(id, 1, agent, asset, 60 * USD, 5, M.R_OVER_ORDER_MAX | M.R_NEEDS_APPROVAL);
+        vm.prank(agent);
+        uint256 bits = book.submitOrder(id, asset, 60 * USD, 5, "x");
+        assertEq(bits, M.R_OVER_ORDER_MAX | M.R_NEEDS_APPROVAL);
+        assertEq(book.getBook(id).orders, 0);
+        assertFalse(book.nonceUsed(id, 5));
+        vm.prank(agent);
+        assertEq(book.submitOrder(id, asset, 30 * USD, 5, "x"), 0);
+        assertEq(book.getBook(id).spent, 30 * USD);
+        assertTrue(book.nonceUsed(id, 5));
+    }
+
+    function test_submitOrderOnlyBoundAgent() public {
+        uint256 id = openApproved();
+        vm.prank(stranger);
+        vm.expectRevert(LotiqRuleBook.NotAgent.selector);
+        book.submitOrder(id, asset, 1 * USD, 1, "");
+        vm.expectRevert(LotiqRuleBook.UnknownBook.selector);
+        book.submitOrder(99, asset, 1 * USD, 1, "");
+        vm.prank(owner);
+        uint256 id2 = book.openBook("none", rule());
+        vm.prank(agent);
+        vm.expectRevert(LotiqRuleBook.NotAgent.selector);
+        book.submitOrder(id2, asset, 1 * USD, 1, "");
+    }
+
+    function test_submitOrderWhilePausedIsLogged() public {
+        uint256 id = openApproved();
+        vm.prank(owner);
+        book.pause(id);
+        vm.prank(agent);
+        assertEq(book.submitOrder(id, asset, 10 * USD, 1, ""), M.R_PAUSED);
+    }
+
     function testFuzz_recordedNeverExceedsPeriod(uint128[8] memory amounts, uint8[8] memory gapsH) public {
         uint256 id = openApproved();
         LotiqRuleBook.RuleInput memory r = rule();

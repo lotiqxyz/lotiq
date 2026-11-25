@@ -298,13 +298,13 @@ export function OnChain() {
   );
 }
 
-// ------------------------------------------------------------------ 5. plans (free / gas / planned token)
+// ------------------------------------------------------------------ 5. plans (free / gas / holder tier)
 
 export function Plans() {
   const plans = [
     { name: "Practice", who: "No wallet, in your browser", small: "Prototype", price: "Free", cta: { href: "/studio", label: "Open the studio", cls: "brand" }, badge: "Prototype" as const },
     { name: "On chain", who: `Rule books on ${CHAIN.name}`, small: "You pay network gas only", price: "Gas (ETH)", cta: { href: "/studio?mode=chain", label: "Use on chain", cls: "brand" }, badge: "Prototype" as const },
-    { name: BRAND.symbol, who: "Planned, not needed today", small: "Utility is planned, unproven", price: "Planned", cta: { href: "/token", label: "Read the plan", cls: "" }, badge: "Concept" as const },
+    { name: "Holder tier", who: `Hold 0.1 % of ${BRAND.symbol} supply`, small: "Larger hosted quotas; unlocks at launch", price: "0.1 %", cta: { href: "/token", label: "Token features", cls: "" }, badge: "Prototype" as const },
   ];
   const incl = [
     ["Deterministic strategy parser", "Prototype"],
@@ -314,13 +314,15 @@ export function Plans() {
     ["Versioned rule sets + diffs", "Prototype"],
     ["Approve exact version on chain", "Prototype"],
     ["Order journal (no tokens move)", "Prototype"],
+    ["Free alerts: bell + browser notifications", "Prototype"],
+    ["Hosted rule books + server runs (larger for holders)", "Prototype"],
     ["Executing trades through a router", "Concept"],
   ] as const;
   return (
     <section id="plans" className="pt-28 md:pt-40" aria-labelledby="plans-t">
       <div className="wrap">
         <h2 id="plans-t" className="d2" data-reveal="">
-          Free to use, <span className="lime">token planned.</span>
+          Free to use, <span className="lime">more for holders.</span>
         </h2>
         <div className="mt-14 grid gap-6 md:grid-cols-3">
           {plans.map((p, i) => (
@@ -356,7 +358,7 @@ export function Plans() {
             ))}
           </ul>
           <p className="mt-8 text-[14px] text-muted">
-            The core never needs {BRAND.symbol}. Contract address: TBA until launch (launchpad TBA). Nothing here is a promise of value.
+            The core never needs {BRAND.symbol}; holding 0.1 % of its supply only raises the hosted quotas. Contract address: TBA until launch (launchpad TBA). Nothing here is a promise of value.
           </p>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { NAV } from "@/config/nav";
 import { Wordmark } from "@/components/site/Mark";
 import { NavWallet } from "@/components/wallet/WalletButton";
+import { Bell } from "@/components/holder/Bell";
 import { CaBox } from "@/components/site/CaCopy";
 import { useFocusTrap } from "@/components/site/useFocusTrap";
 
@@ -32,6 +33,7 @@ export function SiteHeader() {
               ))}
             </nav>
             <div className="ml-auto flex min-w-0 items-center gap-2 lg:ml-0">
+              <Bell />
               <NavWallet label="Connect wallet" />
               <button type="button" className="burger lg:hidden" aria-label="Open the menu" aria-expanded={open} onClick={() => setOpen(true)} data-testid="menu-open">
                 <span>
@@ -63,7 +65,7 @@ function MobileMenu({ onClose, path }: { onClose: () => void; path: string }) {
         </button>
       </div>
       <nav className="wrap mt-2" aria-label="Main">
-        {[{ href: "/", label: "Home", tag: null }, ...NAV].map((n) => (
+        {[{ href: "/", label: "Home", tag: null }, ...NAV, { href: "/method", label: "Method", tag: null }].map((n) => (
           <Link key={n.href} href={n.href} onClick={onClose} className="big" aria-current={path === n.href ? "page" : undefined}>
             {n.label} {n.tag ? <span className="tag align-middle">{n.tag}</span> : null}
           </Link>

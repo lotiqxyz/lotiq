@@ -121,6 +121,11 @@ contract LotiqRuleBook {
     event BookRevoked(uint256 indexed bookId);
     event OrderApproved(uint256 indexed bookId, bytes32 indexed orderKey);
     event OrderApprovalCancelled(uint256 indexed bookId, bytes32 indexed orderKey);
+    /// @notice A refusal the bound agent chose to put on the record (submitOrder). A reverted recordOrder leaves no log; this does,
+    ///         so the owner can be alerted that the agent tried something the rules refuse.
+    event OrderRefused(
+        uint256 indexed bookId, uint32 indexed version, address indexed agent, address asset, uint256 amount, uint64 nonce, uint256 bits
+    );
     event OrderRecorded(
         uint256 indexed bookId,
         uint32 indexed version,
@@ -271,6 +276,23 @@ contract LotiqRuleBook {
             bookId, Query(msg.sender, version, asset, amount, nonce, _orderApproved[bookId][key], block.timestamp)
         );
         if (bits != 0) revert Refused(bits);
+        (uint256 spent, bool used) = _count(bookId, b, version, key, amount, nonce);
+        emit OrderRecorded(bookId, version, msg.sender, asset, amount, nonce, ref, spent, used);
+    }
+
+    /// @notice Like recordOrder, but a refusal does not revert: it is logged as OrderRefused (nothing else changes) and the bits
+    ///         are returned. Only the agent bound to the active version may submit, so nobody else can fill a book's log.
+    function submitOrder(uint256 bookId, address asset, uint256 amount, uint64 nonce, bytes32 ref) external returns (uint256 bits) {
+        Book storage b = _books[bookId];
+        if (b.owner == address(0)) revert UnknownBook();
+        uint32 version = b.active;
+        if (version == 0 || _versions[bookId][version].agent != msg.sender) revert NotAgent();
+        bytes32 key = orderKey(bookId, version, asset, amount, nonce);
+        bits = _check(bookId, Query(msg.sender, version, asset, amount, nonce, _orderApproved[bookId][key], block.timestamp));
+        if (bits != 0) {
+            emit OrderRefused(bookId, version, msg.sender, asset, amount, nonce, bits);
+            return bits;
+        }
         (uint256 spent, bool used) = _count(bookId, b, version, key, amount, nonce);
         emit OrderRecorded(bookId, version, msg.sender, asset, amount, nonce, ref, spent, used);
     }

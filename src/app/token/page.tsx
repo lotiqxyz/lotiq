@@ -2,22 +2,29 @@ import Link from "next/link";
 import { CaBox } from "@/components/site/CaCopy";
 import { MarkGlyph } from "@/components/site/Mark";
 import { PageHead, StatusBadge } from "@/components/site/PageHead";
+import { ThresholdLive } from "@/components/holder/ThresholdLive";
 import { BRAND, CHAIN, TOKEN } from "@/config/brand";
+import { QUOTAS } from "@/config/quotas";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
   path: "/token",
   title: `${BRAND.symbol} token | ${BRAND.name}`,
-  description: `${BRAND.symbol} on ${BRAND.chainName}: contract address${TOKEN.isLive ? "" : " (published at launch)"}, the token features, and what it is not. The studio never needs it.`,
+  description: `${BRAND.symbol} on ${BRAND.chainName}: contract address${TOKEN.isLive ? "" : " (published at launch)"}, the token features unlocked at 0.1 % of supply, and what stays free. The studio never needs it.`,
 });
 
 export default function TokenPage() {
+  const rows = [
+    { what: "Hosted rule books saved per wallet", free: QUOTAS.free.books, holder: QUOTAS.holder.books },
+    { what: "Server scenario-lab runs per day", free: QUOTAS.free.runsPerDay, holder: QUOTAS.holder.runsPerDay },
+    { what: "Server run history kept", free: QUOTAS.free.history, holder: QUOTAS.holder.history },
+  ];
   return (
     <>
       <PageHead title={BRAND.symbol} accent="Not needed to write a rule.">
         <p>
-          {BRAND.tokenName} ({BRAND.symbol}) is planned for {CHAIN.name}. The studio, the scenario lab, versions, approvals and the rule book contract all
-          work without it. It is the community token of Lotiq, not a share of anything and not a promise of value.
+          {BRAND.tokenName} ({BRAND.symbol}) is the community token of Lotiq on {CHAIN.name}. The studio, the scenario lab, versions, approvals, alerts and the rule book
+          contract all work without it. Holding 0.1 % of the supply raises the quotas of the hosted service. It is not a share of anything and not a promise of value.
         </p>
       </PageHead>
       <div className="wrap grid grid-cols-1 gap-6 pb-10 lg:grid-cols-2">
@@ -38,21 +45,48 @@ export default function TokenPage() {
             Network: {CHAIN.name} (chain {CHAIN.id}), gas paid in {CHAIN.nativeSymbol}. {TOKEN.isLive ? "" : "Launchpad: TBA. "}We never send direct messages first.
           </p>
         </section>
-        <section className="panel" id="utility">
+        <section className="panel" id="utility" data-testid="token-features">
           <h2 className="h3 flex flex-wrap items-center gap-3">
-            Token features <StatusBadge status="Concept" />
+            Token features <StatusBadge status="Prototype" />
           </h2>
-          <ul className="mt-5 grid list-disc gap-2 pl-5 text-muted">
-            <li>Higher limits for saved rule books and scenario runs on a hosted service (planned).</li>
-            <li>Alerts when an agent&apos;s order is refused or a rule book nears its period limit (planned).</li>
-            <li>Access to the planned agent runtime once it exists (planned).</li>
+          <ThresholdLive />
+          <div className="scroll-x mt-5">
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>Hosted service</th>
+                  <th>Free</th>
+                  <th>Holder (≥ 0.1 %)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.what}>
+                    <td>{r.what}</td>
+                    <td>{r.free}</td>
+                    <td>{r.holder}</td>
+                  </tr>
+                ))}
+                <tr>
+                  <td>Alerts: bell inbox + browser notifications</td>
+                  <td>free</td>
+                  <td>free</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h3 className="mt-6 text-[17px] font-medium">How the check works</h3>
+          <ul className="mt-2 grid list-disc gap-2 pl-5 text-[14px] text-muted">
+            <li>You sign one sign-in message with your wallet (no gas, valid up to 4 hours). The server checks the signature, the site, the chain and the expiry on every request.</li>
+            <li>Holder = your balance ≥ total supply / 1000, both read from the token contract on chain at each hosted action (cached at most 30 seconds). The account page shows your balance, the threshold, your share and the block.</li>
+            <li>Every quota is enforced on the server. Practice mode, the studio, the contract and alerts stay free and work without a wallet or the token.</li>
           </ul>
-          <p className="mt-5 text-muted">
-            None of these exists yet, and launching the token does not create them. Practice mode and the contract stay usable without {BRAND.symbol}. No yield, no revenue share, no price
-            promise, not advice.
+          <p className="mt-4 text-[13px] text-muted">
+            Prototype: runs today and is covered by end-to-end tests on a local Robinhood Chain devnet with a test token. Until {BRAND.symbol} launches, the holder tier shows
+            &ldquo;Unlocks at launch&rdquo; and everyone uses the free tier. No fee discounts, revenue share, rewards or airdrops. Not advice.
           </p>
-          <Link href="/studio" className="btn brand mt-6">
-            Use the studio without it
+          <Link href="/account" className="btn brand mt-6">
+            Check my tier
           </Link>
         </section>
       </div>

@@ -24,7 +24,15 @@ export const FAQ = [
   },
   {
     q: "Do I need a wallet or the token?",
-    a: `No wallet for practice mode: the full flow runs in your browser on the same rules. A wallet is needed only to create rule books on Robinhood Chain, where you pay gas in ETH. ${BRAND.symbol} is not needed for anything; its utility is planned and unproven.`,
+    a: `No wallet for practice mode: the full flow runs in your browser on the same rules. A wallet is needed to create rule books on Robinhood Chain (gas in ETH) and to sign in to the hosted service. ${BRAND.symbol} is never needed: holding 0.1 % of its supply only raises the hosted quotas (saved rule books, server scenario runs).`,
+  },
+  {
+    q: "How does the holder check work?",
+    a: "You sign one sign-in message (no gas, valid up to 4 hours). On every hosted request the server checks that signature, the site, the chain and the expiry, then reads your token balance and the total supply on chain: balance ≥ supply / 1000 is the holder tier. Before the token launches everyone uses the free tier.",
+  },
+  {
+    q: "What alerts are there, and do they cost anything?",
+    a: "Alerts are free and web only. The bell in the header lists, for the rule books your wallet owns: agent orders the rules refused, a period limit near or reached, versions waiting for your approval, pauses and revokes, all read from the contract's events. Turn on browser notifications to see new ones while a tab of the site is open. No e-mail, no messenger, no push service.",
   },
   {
     q: "Is it safe to rely on?",

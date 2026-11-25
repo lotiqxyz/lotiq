@@ -11,20 +11,22 @@ This repository is the working code behind https://lotiq.xyz.
 - **What runs today.** The studio (`/studio`): a strategy parser written as fixed patterns (no language model) that asks clarification questions instead of guessing, a rule check where every line shows its source, a scenario lab that accepts or refuses test orders and names the rule that decided, and versions with diffs, exact-hash approval, withdraw, pause and revoke. Practice mode runs all of it in the browser without a wallet. The dashboard (`/dashboard`) shows versions, approvals, scenario runs and the change log. `examples/agent.mjs` is a minimal agent that checks before it records.
 - **What reads live data.** The asset list re-proves every Robinhood stock token on Robinhood Chain (proxy code hash, beacon slot, minted supply) and reads the matching Chainlink feeds with their update times. The home page reads the head block and gas price. The on-chain mode and the dashboard read the rule book contract's views and events.
 - **The contract.** `LotiqRuleBook` is written and tested (unit, fuzz, invariant and Robinhood Chain fork tests) but **not deployed yet**; the site says so and practice mode uses the same rules. It holds no funds, moves no tokens, has no admin, no fee and no upgrade path, and has not had an outside security review.
-- **Planned, not built.** Executing buys through a DEX (with the output forced to the owner), a hosted agent runtime, and the uses planned for $LOTIQ. All are labelled Concept on the site.
+- **Token features (run today).** One wallet signature (EIP-4361, no gas, at most 4 hours) opens a session for the hosted service: rule books saved per wallet and the scenario lab run on the server, with quotas enforced on the server. Wallets holding at least 0.1 % of the $LOTIQ supply (balance ≥ total supply / 1000, read on chain at each request) get larger quotas; until the token launches everyone uses the free tier. Alerts are free for everyone: a bell inbox read from the contract's events and browser notifications while a tab is open.
+- **Planned, not built.** Executing buys through a DEX (with the output forced to the owner) and a hosted agent runtime. Both are labelled Concept on the site.
 - **What nothing here claims.** Rules limit what an agent may do; they do not make its orders good ones. A stock token is a token on Robinhood Chain, not the share itself. $LOTIQ has no promised value. Nothing here is financial advice.
 
 ## Layout
 
 | Path | What it is |
 |---|---|
-| `src/app/` | Pages (`/`, `/studio`, `/dashboard`, `/assets`, `/method`, `/token`, a localhost-only `/deploy`) and API routes (`/api/chain`, `/api/rpc`, `/api/assets`, `/api/books`). |
+| `src/app/` | Pages (`/`, `/studio`, `/dashboard`, `/assets`, `/account`, `/method`, `/token`, a localhost-only `/deploy`) and API routes (`/api/chain`, `/api/rpc`, `/api/assets`, `/api/books`, `/api/holder`, `/api/hosted`, `/api/hosted/run`). |
+| `src/lib/holder/` | The sign-in message, its verification and the holder rule, with tests. |
 | `src/components/` | Home sections, the studio (`studio/`), the wallet dialog, header and footer. |
-| `src/config/` | `brand.ts` (name, ticker, token address, links), `contracts.ts` (rule book address, testnet facts), `chain.ts` (stock-token proof constants, feeds). |
+| `src/config/` | `brand.ts` (name, ticker, token address, links), `contracts.ts` (rule book address, testnet facts), `chain.ts` (stock-token proof constants, feeds), `quotas.ts` (free and holder quotas). |
 | `src/lib/rules/` | The rule engine (`engine.ts`), reason bits (`bits.ts`), parser (`parse.ts`), canonical text and diff (`canonical.ts`), scenario lab (`scenarios.ts`), practice book (`book.ts`) and their tests. |
-| `src/lib/server/` | Server-side chain reads: stock-token board, rule books from views and logs, chain snapshot. |
+| `src/lib/server/` | Server-side chain reads (stock-token board, rule books from views and logs, chain snapshot), the holder tier, the hosted service and its storage. |
 | `contracts/` | Solidity sources (`src/LotiqRuleBook.sol`, `src/LotiqRuleMath.sol`) and Foundry tests (`test/`). |
-| `examples/` | `agent.mjs`: reads the version its owner approved, asks `checkOrder`, records only what fits. |
+| `examples/` | `agent.mjs`: reads the version its owner approved, asks `checkOrder`, records only what fits, or submits and puts a refusal on the record. |
 | `scripts/` | `verify-deployment` and the contract artifact builder. |
 | `public/` | Brand images and wallet logos. |
 
@@ -54,7 +56,7 @@ forge test --match-contract Fork --fork-url https://rpc.mainnet.chain.robinhood.
 
 ### What was checked for this snapshot
 
-2026-11-25 (UTC), Node.js 25.8.2, forge 1.5.1: typecheck exit 0; `npm test` 34 pass / 0 fail; `next build` 20 routes (19 once the owner-only deploy page is removed); `forge test` 36 passed (31 unit and fuzz tests in `LotiqRuleBookTest`, 5 invariants in `LotiqRuleBookInvariant`), fork suite 4 passed against Robinhood Chain mainnet state (real NVDA and TSLA stock tokens, the NVDA Chainlink feed, deploy gas). The contract is not deployed yet, so there is no on-chain deployment to verify. An end-to-end browser run on a local Robinhood Chain devnet (chain id 4663) with injected test wallets and the example agent passed 10 of 10 steps (open, approve, record, refuse, per-order approval, new version, pause, history), and `verify-deployment` printed MATCH for that devnet deployment and MISMATCH for a wrong address; that run is kept with the project's working notes, not in this repository.
+2026-11-25 (UTC), Node.js 25.8.2, forge 1.5.1: typecheck exit 0; `npm test` 41 pass / 0 fail (including sign-in message checks: foreign domain, spoofed Host header, non-standard text, expired, longer than 4 hours; the 0.1 % holder rule at the exact threshold and one unit under; server quotas; alerts from logs); `forge test` 39 passed (34 unit and fuzz tests, 5 invariants); fork suite 4 passed against Robinhood Chain mainnet state (real NVDA and TSLA stock tokens, the NVDA Chainlink feed, deploy gas). The contract is not deployed yet, so there is no on-chain deployment to verify. An end-to-end browser run on a local Robinhood Chain devnet (chain id 4663) with injected test wallets, a test token and the example agent passed 13 of 13 steps (rule book open, approve, record, refuse, per-order approval, new version, pause, a refused order arriving in the alert bell and as a browser notification, a wallet with 0.05 % kept on the free tier and stopped at its quota, a wallet over 0.1 % on the holder tier, sign out), and `verify-deployment` printed MATCH for that devnet deployment and MISMATCH for a wrong address; that run is kept with the project's working notes, not in this repository.
 
 ## Look at the site
 
@@ -72,7 +74,7 @@ Open http://localhost:6680. Without any configuration the site reads Robinhood C
 |---|---|---|
 | `LotiqRuleBook` (with the internal library `LotiqRuleMath`) | not deployed yet | — |
 
-A rule book belongs to its owner. Each version stores the keccak256 hash of the rule set's canonical text plus the enforced limits as plain fields: one asset, one agent, a maximum per order and per period (1, 7 or 30 days, in USD with 6 decimals), an approval threshold, weekdays and UTC hours, a minimum gap and a validity window (at most 730 days). `approve(book, version, hash)` activates exactly that version and supersedes the previous one in the same transaction. `checkOrder` answers a bitmask of 17 reasons for any order and time; the agent's `recordOrder` re-checks at the current block and reverts with those bits when a rule fails, otherwise counts the order against the period limit. Orders above the threshold need `approveOrder` for that exact order. `pause`, `revoke` (final) and the agent's own `halt` take effect from the next call. Measured gas: deploy 2,367,720; `openBook` about 312k; `propose` about 183k; `approve` about 113k; `recordOrder` about 112k.
+A rule book belongs to its owner. Each version stores the keccak256 hash of the rule set's canonical text plus the enforced limits as plain fields: one asset, one agent, a maximum per order and per period (1, 7 or 30 days, in USD with 6 decimals), an approval threshold, weekdays and UTC hours, a minimum gap and a validity window (at most 730 days). `approve(book, version, hash)` activates exactly that version and supersedes the previous one in the same transaction. `checkOrder` answers a bitmask of 17 reasons for any order and time; the agent's `recordOrder` re-checks at the current block and reverts with those bits when a rule fails, otherwise counts the order against the period limit. `submitOrder` does the same but logs a refusal as `OrderRefused` instead of reverting, which is what the owner's alerts read. Orders above the threshold need `approveOrder` for that exact order. `pause`, `revoke` (final) and the agent's own `halt` take effect from the next call. Measured gas: deploy 2,508,382; `openBook` about 312k; `propose` about 183k; `approve` about 113k; `recordOrder` about 114k; `submitOrder` about 50k when refused.
 
 ## Verify a deployment
 
@@ -99,11 +101,23 @@ The site offers to add it when you connect. Robinhood Chain Testnet (chain ID 46
 - Robinhood Chain JSON-RPC (the official endpoint, then public fallbacks). The browser reads through the site's relay `/api/rpc`, which only forwards a short list of read methods and targets and is rate limited.
 - Stock tokens: candidates from a 23 Nov 2026 scan of the Robinhood beacon's upgrade events; each one is re-proven live (code hash of the beacon proxy, ERC-1967 beacon slot, minted supply). A ticker alone is never accepted.
 - Chainlink data feeds on Robinhood Chain for prices, each with its update time; stock feeds pause outside US market hours.
-- Rule books: views plus `eth_getLogs` over the contract's events; if part of the block range cannot be read, the page says the list may be incomplete. Refused orders leave no log, so the studio keeps scenario results in the visitor's browser.
+- Rule books and alerts: views plus `eth_getLogs` over the contract's events; if part of the block range cannot be read, the page says the list may be incomplete. Alerts are computed in the browser from those events; the last seen block is kept in the browser.
+- Holder tier: `balanceOf` and `totalSupply` of the token read at the same block, cached at most 30 seconds per wallet. Hosted data lives in the configured key-value store, or in server memory (bounded, may be lost on restart) when none is configured.
 
 ## Token
 
-$LOTIQ is the community token of Lotiq on Robinhood Chain. Contract address: announced on https://lotiq.xyz at launch. It has no promised value. Its token features (higher limits on a hosted service, refusal alerts, access to a future agent runtime) are concepts and do not exist yet. The studio never needs it.
+$LOTIQ is the community token of Lotiq on Robinhood Chain. Contract address: announced on https://lotiq.xyz at launch. It has no promised value and the studio never needs it.
+
+Token features (run today, tested end to end on a local devnet with a test token): a wallet holding at least 0.1 % of the supply gets larger quotas on the hosted service.
+
+| Hosted service | Free | Holder |
+|---|---|---|
+| Saved rule books per wallet | 2 | 25 |
+| Server scenario runs per day | 20 | 300 |
+| Run history kept | 10 | 200 |
+| Alerts (bell + browser notifications) | yes | yes |
+
+No fee discounts, revenue share, rewards or airdrops. Until the token launches the holder tier shows "Unlocks at launch".
 
 ## Deploy your own
 
@@ -115,7 +129,7 @@ $LOTIQ is the community token of Lotiq on Robinhood Chain. Contract address: ann
 | `ROBINHOOD_RPC_URL` | Server-side RPC with `eth_getLogs` for the rule book history | `https://…` |
 | `NEXT_PUBLIC_ROBINHOOD_RPC_URL` | Browser RPC override (public) | `https://…` |
 | `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | WalletConnect in the wallet dialog | 32 hex characters |
-| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Shared rate-limit store | `https://…`, token string |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Shared store for rate limits, hosted rule books, scenario history and signed-out sessions | `https://…`, token string |
 | `STORE_KEY_PREFIX` | Key prefix in that store | short string, default `lotiq:` |
 
 3. Contracts: deploy `LotiqRuleBook` (no constructor arguments, nothing to link; `/deploy` on localhost does it from your wallet), put its address, block and creation transaction into `src/config/contracts.ts`, and run `npm run verify-deployment -- --book <address> --book-tx <tx>`.

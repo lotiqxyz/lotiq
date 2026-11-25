@@ -36,6 +36,8 @@ export default function MethodPage() {
             <Row k="Scenario lab" v={<><StatusBadge status="Prototype" /> Standard and custom test orders on a fresh practice book; each result names the rule and the numbers.</>} />
             <Row k="Versions and approvals" v={<><StatusBadge status="Prototype" /> Practice book in this browser; on chain through {CONTRACT_NAME} once deployed.</>} />
             <Row k="Order journal" v={<><StatusBadge status="Prototype" /> The agent records orders on chain; the contract counts them against the limits. No tokens move.</>} />
+            <Row k="Hosted service + holder tier" v={<><StatusBadge status="Prototype" /> One EIP-4361 sign-in signature (≤ 4 h, checked against a fixed domain list on every request, revoked on sign out). Saved rule books and server scenario runs with quotas enforced on the server; holder = balance ≥ total supply / 1000 of the token, read on chain at each request. Unlocks at launch.</>} />
+            <Row k="Alerts" v={<><StatusBadge status="Prototype" /> Free. A bell inbox derived from the rule book&apos;s events (refused orders via submitOrder, period limit ≥ 80 % / reached, versions waiting, pause, revoke) and browser notifications while a tab is open. No e-mail, no push service.</>} />
             <Row k="Trade execution" v={<><StatusBadge status="Concept" /> Routing real buys through a DEX, with the output forced to the owner, is planned. It is not built because it moves funds and needs its own contract, fork tests and an outside review.</>} />
             <Row k="Agent runtime" v={<><StatusBadge status="Concept" /> A hosted agent that reads the approved version and records orders on schedule is planned. Today the agent is whatever wallet you bind.</>} />
           </dl>
@@ -93,7 +95,7 @@ export default function MethodPage() {
             <Row k="Address" v={bookLive() ? <a className="ul font-mono" href={explorerAddress(CONTRACTS.book)} target="_blank" rel="noreferrer">{CONTRACTS.book}</a> : "Not deployed yet. The owner deploys it; the address then appears here and in the footer."} />
             <Row k="Stores" v="Rule books (owner, label, active version, pause / revoke, spending window, last order time, order count) and versions (hash + every limit + status + parent)." />
             <Row k="Owner can" v="openBook, propose, approve (exact number + hash), withdraw, pause, unpause, revoke (final), approveOrder, cancelOrderApproval." />
-            <Row k="Agent can" v="recordOrder (re-checks every rule at the current block and reverts with Refused(bits) when one fails) and halt (pause only; it can never unpause or raise a limit)." />
+            <Row k="Agent can" v="recordOrder (re-checks every rule at the current block and reverts with Refused(bits) when one fails), submitOrder (same check, but a refusal is logged as OrderRefused instead of reverting, so the owner is alerted) and halt (pause only; it can never unpause or raise a limit)." />
             <Row k="Anyone can" v="checkOrder (reason bits for any order and time), getBook, getVersion, remainingInPeriod, orderKey, booksOf, booksOfAgent." />
             <Row k="Never" v="Holds or moves tokens or ETH, has no admin, no fee, no upgrade path, no owner over other people's books." />
             <Row k="Tests" v={`Unit, fuzz (1,024 runs each), invariant (5 invariants over random owner/agent sequences) and ${CHAIN.name} fork tests (real stock tokens, a real Chainlink feed).`} />

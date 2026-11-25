@@ -4,6 +4,7 @@
 //
 //   RPC_URL=https://rpc.mainnet.chain.robinhood.com BOOK=0x<LotiqRuleBook> AGENT_KEY=0x<agent private key> node examples/agent.mjs status
 //   ... node examples/agent.mjs record <bookId> <usd> [nonce]
+//   ... node examples/agent.mjs submit <bookId> <usd> [nonce]
 //
 // status  lists the rule books whose approved versions name this agent, with the active version's limits.
 // record  checks first (checkOrder at the latest block time); refused => prints the rules that failed and exits 3; else sends recordOrder.
@@ -66,7 +67,23 @@ if (cmd === "status") {
     process.exit(1);
   }
   console.log(`RECORDED ${usd(amount)} nonce ${nonce} tx ${hash} gas ${rc.gasUsed}`);
+} else if (cmd === "submit") {
+  // submitOrder: records the order when every rule passes; otherwise puts the refusal on the record (OrderRefused) so the owner is alerted.
+  const id = BigInt(args[0]);
+  const amount = BigInt(Math.round(Number(args[1]) * 1e6));
+  const nonce = BigInt(args[2] ?? Date.now() % 1e9);
+  const b = await read("getBook", [id]);
+  const v = await read("getVersion", [id, b.active]);
+  const sim = await pub.simulateContract({ account, address: BOOK, abi: ABI, functionName: "submitOrder", args: [id, v.asset, amount, nonce, stringToHex(`agent-${nonce}`, { size: 32 })] });
+  const hash = await wallet.writeContract(sim.request);
+  const rc = await pub.waitForTransactionReceipt({ hash });
+  if (rc.status !== "success") {
+    console.log(`FAILED tx ${hash}`);
+    process.exit(1);
+  }
+  const bits = sim.result;
+  console.log(bits === 0n ? `RECORDED ${usd(amount)} nonce ${nonce} tx ${hash}` : `REFUSED-LOGGED bits=${bits} ${names(bits).join(",")} tx ${hash}`);
 } else {
-  console.log("usage: agent.mjs status | record <bookId> <usd> [nonce]");
+  console.log("usage: agent.mjs status | record <bookId> <usd> [nonce] | submit <bookId> <usd> [nonce]");
   process.exit(2);
 }

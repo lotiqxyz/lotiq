@@ -1,4 +1,4 @@
-import { isAddress } from "@/config/brand";
+import { BRAND, isAddress } from "@/config/brand";
 
 /*
  * Lotiq's own contract on Robinhood Chain (chain 4663). Not deployed yet: the owner deploys it from the localhost-only /deploy page and
@@ -14,6 +14,8 @@ const DEPLOYED = {
   block: 0,
   /** Creation transaction. */
   tx: "",
+  /** Local tests only (override): a test ERC-20 standing in for $LOTIQ. Empty in production, where BRAND.ca is used. */
+  token: "",
 };
 
 /**
@@ -34,6 +36,12 @@ function testOverride(): typeof DEPLOYED | null {
 export const CONTRACTS = testOverride() ?? DEPLOYED;
 export const bookLive = () => isAddress(CONTRACTS.book);
 export const CONTRACT_NAME = "LotiqRuleBook" as const;
+
+/** The token the holder tier reads: the test token under the local override, else $LOTIQ's CA once it exists. */
+export function holderToken(): string | null {
+  if (isAddress(CONTRACTS.token)) return CONTRACTS.token;
+  return isAddress(BRAND.ca) ? BRAND.ca : null;
+}
 
 /**
  * Robinhood Chain Testnet, proven from this machine on 25 Nov 2026 (eth_chainId 0xb626 = 46630 through the official RPC host, block
